@@ -559,6 +559,7 @@ class Game {
     obstacleTimer = 0;
     difficulty = 90;
     modifier = 1;
+    score = 0;
     constructor(){
         //  Make canvas
         this.pixi = new _pixiJs.Application({
@@ -582,8 +583,26 @@ class Game {
         this.player = new (0, _player.Player)(this.loader.resources["playerTexture"].texture, this.pixi.screen, this.loader.resources["duckingTexture"].texture, this.ground.height);
         this.pixi.stage.addChild(this.player);
         this.obstacleTextures.push(this.loader.resources["fireBallTexture"].texture, this.loader.resources["fireWallTexture"].texture, this.loader.resources["lavaTexture"].texture);
+        this.style = new _pixiJs.TextStyle({
+            dropShadow: true,
+            fill: [
+                "#df0101",
+                "#cf7e20",
+                "#fff700"
+            ],
+            fillGradientStops: [
+                0
+            ],
+            fontFamily: "Comic Sans MS",
+            fontSize: 36,
+            fontWeight: "bolder",
+            stroke: "white",
+            strokeThickness: 1
+        });
+        this.scoreText = new _pixiJs.Text(this.score, this.style);
+        this.scoreText.x = 10;
+        this.pixi.stage.addChild(this.scoreText);
         this.pixi.ticker.add((delta)=>this.update(delta));
-        console.log(this.player.x);
     }
     update(delta) {
         this.timer += delta;
@@ -591,6 +610,8 @@ class Game {
         if (this.timer > 120) {
             this.difficulty--;
             this.modifier += 0.05;
+            this.score++;
+            this.scoreText.text = this.score;
             this.timer = 0;
         }
         if (this.obstacleTimer > this.difficulty) {
@@ -601,30 +622,13 @@ class Game {
         for (let obstacle of this.obstacles){
             obstacle.update();
             if (this.collision(this.player, obstacle)) {
-                console.log("collision");
-                const style = new _pixiJs.TextStyle({
-                    dropShadow: true,
-                    fill: [
-                        "#df0101",
-                        "#cf7e20",
-                        "#fff700"
-                    ],
-                    fillGradientStops: [
-                        0
-                    ],
-                    fontFamily: "Comic Sans MS",
-                    fontSize: 36,
-                    fontWeight: "bolder",
-                    stroke: "white",
-                    strokeThickness: 1
-                });
-                this.text = new _pixiJs.Text("Game Over\nPlay Again?", style);
-                this.text.x = this.pixi.screen.width / 2 - this.text.width + 75;
-                this.text.y = this.pixi.screen.height / 2 - this.text.height;
-                this.text.interactive = true;
-                this.text.buttonMode = true;
-                this.text.on("pointerdown", ()=>this.restartGame());
-                this.pixi.stage.addChild(this.text);
+                this.endText = new _pixiJs.Text("Game Over\nPlay Again?", this.style);
+                this.endText.x = this.pixi.screen.width / 2 - this.endText.width + 75;
+                this.endText.y = this.pixi.screen.height / 2 - this.endText.height;
+                this.endText.interactive = true;
+                this.endText.buttonMode = true;
+                this.endText.on("pointerdown", ()=>this.restartGame());
+                this.pixi.stage.addChild(this.endText);
                 this.pixi.ticker.stop();
             }
             if (obstacle.x < -60) this.deleteObstacle(obstacle);
@@ -646,7 +650,11 @@ class Game {
         obstacle.destroy();
     }
     restartGame() {
-        this.text.destroy();
+        this.difficulty = 90;
+        this.modifier = 1;
+        this.score = 0;
+        this.scoreText.text = this.score;
+        this.endText.destroy();
         for (let obstacle of this.obstacles)this.deleteObstacle(obstacle);
         this.pixi.ticker.start();
     }
