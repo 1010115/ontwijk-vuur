@@ -583,6 +583,7 @@ class Game {
         this.pixi.stage.addChild(this.player);
         this.obstacleTextures.push(this.loader.resources["fireBallTexture"].texture, this.loader.resources["fireWallTexture"].texture, this.loader.resources["lavaTexture"].texture);
         this.pixi.ticker.add((delta)=>this.update(delta));
+        console.log(this.player.x);
     }
     update(delta) {
         this.timer += delta;
@@ -599,7 +600,33 @@ class Game {
         this.player.update();
         for (let obstacle of this.obstacles){
             obstacle.update();
-            if (this.collision(this.player, obstacle)) console.log("collision");
+            if (this.collision(this.player, obstacle)) {
+                console.log("collision");
+                const style = new _pixiJs.TextStyle({
+                    dropShadow: true,
+                    fill: [
+                        "#df0101",
+                        "#cf7e20",
+                        "#fff700"
+                    ],
+                    fillGradientStops: [
+                        0
+                    ],
+                    fontFamily: "Comic Sans MS",
+                    fontSize: 36,
+                    fontWeight: "bolder",
+                    stroke: "white",
+                    strokeThickness: 1
+                });
+                this.text = new _pixiJs.Text("Game Over\nPlay Again?", style);
+                this.text.x = this.pixi.screen.width / 2 - this.text.width + 75;
+                this.text.y = this.pixi.screen.height / 2 - this.text.height;
+                this.text.interactive = true;
+                this.text.buttonMode = true;
+                this.text.on("pointerdown", ()=>this.restartGame());
+                this.pixi.stage.addChild(this.text);
+                this.pixi.ticker.stop();
+            }
             if (obstacle.x < -60) this.deleteObstacle(obstacle);
         }
     }
@@ -617,6 +644,11 @@ class Game {
     deleteObstacle(obstacle) {
         this.obstacles = this.obstacles.filter((o)=>o != obstacle);
         obstacle.destroy();
+    }
+    restartGame() {
+        this.text.destroy();
+        for (let obstacle of this.obstacles)this.deleteObstacle(obstacle);
+        this.pixi.ticker.start();
     }
 }
 new Game();
