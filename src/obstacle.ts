@@ -51,13 +51,13 @@ export class Obstacle extends PIXI.Sprite {
     // this.addChild(greenBox);
   }
 
-  public update() {
+  public update(): void {
     //console.log(this.y)
     //console.log(this.getBounds())
     this.x -= this.xSpeed;
   }
 
-  getBounds(): PIXI.Rectangle {
+  public getBounds(): PIXI.Rectangle {
     // console.log(new PIXI.Rectangle(this.x , this.y , this.hitbox.width, this.hitbox.height))
     return new PIXI.Rectangle(
       this.x + this.hitbox.x,

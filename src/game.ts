@@ -8,6 +8,7 @@ import lavaImage from "./img/lava.png";
 import fireBallImage from "./img/fireball.png";
 import { Player } from "./player";
 import { Obstacle } from "./obstacle";
+import { Ticker } from "pixi.js";
 
 export class Game {
   private pixi: PIXI.Application;
@@ -22,6 +23,10 @@ export class Game {
   private obstacleTimer: number = 0;
   private difficulty: number = 90;
   private modifier: number = 1;
+  private style: PIXI.TextStyle;
+  private endText: PIXI.Text;
+  private scoreText: PIXI.Text;
+  private score: number = 0;
 
   constructor() {
     //  Make canvas
@@ -74,6 +79,27 @@ export class Game {
       this.loader.resources["lavaTexture"].texture!
     );
 
+     this.style = new PIXI.TextStyle({
+      dropShadow: true,
+      fill: [
+          "#df0101",
+          "#cf7e20",
+          "#fff700"
+      ],
+      fillGradientStops: [
+          0
+      ],
+      fontFamily: "Comic Sans MS",
+      fontSize: 36,
+      fontWeight: "bolder",
+      stroke: "white",
+      strokeThickness: 1
+  });  
+
+    this.scoreText = new PIXI.Text(this.score ,this.style)
+    this.scoreText.x = 10
+    this.pixi.stage.addChild(this.scoreText)
+
     this.pixi.ticker.add((delta) => this.update(delta));
   }
 
@@ -84,7 +110,8 @@ export class Game {
     if (this.timer > 120) {
       this.difficulty--;
       this.modifier += 0.05;
-     
+      this.score ++
+      this.scoreText.text = this.score
       this.timer = 0;
     }
 
@@ -99,7 +126,16 @@ export class Game {
       obstacle.update();
 
       if (this.collision(this.player, obstacle)) {
-        console.log("collision");
+        
+        this.endText = new PIXI.Text('Game Over\nPlay Again?', this.style);
+        this.endText.x = this.pixi.screen.width / 2 - this.endText.width + 75
+        this.endText.y = this.pixi.screen.height /2 - this.endText.height
+        this.endText.interactive = true
+        this.endText.buttonMode = true
+        this.endText.on('pointerdown', ()=> this.restartGame())
+        this.pixi.stage.addChild(this.endText)
+        this.pixi.ticker.stop()
+
       }
 
       if (obstacle.x < -60) {
@@ -108,7 +144,7 @@ export class Game {
     }
   }
 
-  collision(sprite1: PIXI.Sprite, sprite2: PIXI.Sprite) {
+  collision(sprite1: PIXI.Sprite, sprite2: PIXI.Sprite): boolean {
     const bounds1 = sprite1.getBounds();
     const bounds2 = sprite2.getBounds();
 
@@ -120,7 +156,7 @@ export class Game {
     );
   }
 
-  makeObstacle(modifier: number) {
+  makeObstacle(modifier: number): void {
     let type = Math.floor(Math.random() * 3);
 
     this.obstacle = new Obstacle(
@@ -134,10 +170,23 @@ export class Game {
     this.obstacles.push(this.obstacle);
   }
 
-  deleteObstacle(obstacle: Obstacle) {
+  private deleteObstacle(obstacle: Obstacle) : void{
     this.obstacles = this.obstacles.filter((o) => o != obstacle);
     obstacle.destroy();
   }
+
+  private restartGame(){
+    this.difficulty = 90
+    this.modifier = 1
+    this.score = 0
+    this.scoreText.text = this.score
+    this.endText.destroy()
+    for(let obstacle of this.obstacles)
+      this.deleteObstacle(obstacle)
+      this.pixi.ticker.start()
+
+  }
 }
 
+  
 new Game();
