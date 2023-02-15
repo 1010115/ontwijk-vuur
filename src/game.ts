@@ -100,6 +100,7 @@ export class Game {
     this.scoreText.x = 10
     this.pixi.stage.addChild(this.scoreText)
 
+    this.pixi.ticker.maxFPS = 60
     this.pixi.ticker.add((delta) => this.update(delta));
   }
 

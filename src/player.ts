@@ -54,7 +54,7 @@ export class Player extends PIXI.Sprite {
   public update() {
     // Jump height
     if (this.y < 200) {
-      this.yspeed += 0.5;
+      this.yspeed += 1;
     }
 
     // Jump status clear and grounding
@@ -83,7 +83,7 @@ export class Player extends PIXI.Sprite {
 
   private jump() {
     if (this.jumping == false) {
-      this.yspeed -= 4;
+      this.yspeed -= 8;
       this.jumping = true;
     }
   }

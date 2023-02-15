@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
 
 export class Obstacle extends PIXI.Sprite {
-  private xSpeed: number = 1;
+  private xSpeed: number = 2;
   private gameScreen: PIXI.Rectangle;
   private hitbox: PIXI.Rectangle;
 
@@ -21,19 +21,19 @@ export class Obstacle extends PIXI.Sprite {
       //this.scale.set(2);
       this.y = 250 + Math.random() * 10;
 
-      this.xSpeed = 5 * modifier;
+      this.xSpeed = 10 * modifier;
     } else if (type == 1) {
       // wall hitbox
       this.hitbox = new PIXI.Rectangle(this.x, this.y, 40, 44);
       //this.scale.set(2);
       this.y = gameScreen.height - groundHeight - this.height - 70;
-      this.xSpeed = 3 * modifier;
+      this.xSpeed = 6 * modifier;
     } else if (type == 2) {
       // lava hitbox
       this.hitbox = new PIXI.Rectangle(this.x, this.y, 61, 16);
       //this.scale.set();
       this.y = gameScreen.height - groundHeight - this.height - 40;
-      this.xSpeed = 3 * modifier;
+      this.xSpeed = 6 * modifier;
     }
     this.gameScreen = gameScreen;
     this.x = gameScreen.width;

@@ -602,6 +602,7 @@ class Game {
         this.scoreText = new _pixiJs.Text(this.score, this.style);
         this.scoreText.x = 10;
         this.pixi.stage.addChild(this.scoreText);
+        this.pixi.ticker.maxFPS = 60;
         this.pixi.ticker.add((delta)=>this.update(delta));
     }
     update(delta) {
@@ -38687,7 +38688,7 @@ class Player extends _pixiJs.Sprite {
     }
     update() {
         // Jump height
-        if (this.y < 200) this.yspeed += 0.5;
+        if (this.y < 200) this.yspeed += 1;
         // Jump status clear and grounding
         if (this.y > this.gameScreen.height - this.height - this.groundHeight && this.jumping == true || this.y > this.gameScreen.height - this.height - this.groundHeight && this.ducking == true) {
             this.yspeed = 0;
@@ -38700,7 +38701,7 @@ class Player extends _pixiJs.Sprite {
     }
     jump() {
         if (this.jumping == false) {
-            this.yspeed -= 4;
+            this.yspeed -= 8;
             this.jumping = true;
         }
     }
@@ -38758,7 +38759,7 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Obstacle", ()=>Obstacle);
 var _pixiJs = require("pixi.js");
 class Obstacle extends _pixiJs.Sprite {
-    xSpeed = 1;
+    xSpeed = 2;
     constructor(texture, type, groundHeight, gameScreen, modifier){
         super(texture);
         if (type == 0) {
@@ -38766,19 +38767,19 @@ class Obstacle extends _pixiJs.Sprite {
             this.hitbox = new _pixiJs.Rectangle(this.x, this.y, 31, 30);
             //this.scale.set(2);
             this.y = 250 + Math.random() * 10;
-            this.xSpeed = 5 * modifier;
+            this.xSpeed = 10 * modifier;
         } else if (type == 1) {
             // wall hitbox
             this.hitbox = new _pixiJs.Rectangle(this.x, this.y, 40, 44);
             //this.scale.set(2);
             this.y = gameScreen.height - groundHeight - this.height - 70;
-            this.xSpeed = 3 * modifier;
+            this.xSpeed = 6 * modifier;
         } else if (type == 2) {
             // lava hitbox
             this.hitbox = new _pixiJs.Rectangle(this.x, this.y, 61, 16);
             //this.scale.set();
             this.y = gameScreen.height - groundHeight - this.height - 40;
-            this.xSpeed = 3 * modifier;
+            this.xSpeed = 6 * modifier;
         }
         this.gameScreen = gameScreen;
         this.x = gameScreen.width;
